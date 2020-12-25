@@ -6,56 +6,106 @@ export default {
       default: () => []
     }
   },
-
-  render(h) {
-    return h(
-      "div",
-      {
-        class: "list"
-      },
-      [
-        this.dataSource &&
-          this.dataSource.length &&
-          this.dataSource.map((d) => {
-            return h(
-              "div",
-              {
-                class: "row"
-              },
-              [
-                h(
-                  "p",
-                  {
-                    class: "th"
-                  },
-                  d.name || "暂无数据"
-                ),
-                h(
-                  "div",
-                  {
-                    class: "tr-body",
-                    style: {}
-                  },
-                  [
-                    d.list &&
-                      d.list.length &&
-                      d.list.map((item) => {
-                        return h(
-                          "div",
-                          {
-                            class: "tr-body-item"
-                          },
-                          item.value
-                        );
-                      })
-                  ]
-                )
-              ]
-            );
+  methods: {
+    largeImg(src) {
+      console.log('largeImg====', src)
+    },
+    renderVnode(h, data) {
+      // let that = this
+      let children = []
+      data.forEach(element => {
+        let type = Object.prototype.toString.call(element)
+        let obj = {}
+        let ele = {}
+        obj.tag = element.tag
+        if (type === '[object Object]') {
+          let attrs = {}
+          element.attrs.forEach(attr => {
+            attrs[attr.name] = attr.value 
           })
-      ]
-    );
+          obj.attrs = attrs
+          if (element.children && element.children.length > 0) {
+            obj.children = this.renderVnode(h, element.children)
+          }
+          if (element.tag === 'img') {
+            // obj.on = {
+            //   click: that.largeImg.bind(that, obj.attrs.src)
+            // }
+            ele = h(obj.tag, {
+              attrs: obj.attrs,
+              // on: obj.on
+            })
+          } else {
+            ele = h(obj.tag, {
+              attrs: obj.attrs,
+              // on: obj.on
+            }, obj.children) 
+          }
+          
+        } else if (type === '[object String]') {
+          obj.tag = 'span'
+          ele = h(obj.tag, element)
+        }
+        children.push(ele)
+      })
+      return children
+    }
+  },
+  
+  render(h) {
+    let result = this.renderVnode(h, this.dataSource)
+    console.log("result", result)
+    return h('div', result)
   }
+  // render(h) {
+  //   return h(
+  //     "div",
+  //     {
+  //       class: "list"
+  //     },
+  //     [
+  //       this.dataSource &&
+  //         this.dataSource.length &&
+  //         this.dataSource.map((d) => {
+  //           return h(
+  //             "div",
+  //             {
+  //               class: "row"
+  //             },
+  //             [
+  //               h(
+  //                 "p",
+  //                 {
+  //                   class: "th"
+  //                 },
+  //                 d.name || "暂无数据"
+  //               ),
+  //               h(
+  //                 "div",
+  //                 {
+  //                   class: "tr-body",
+  //                   style: {}
+  //                 },
+  //                 [
+  //                   d.list &&
+  //                     d.list.length &&
+  //                     d.list.map((item) => {
+  //                       return h(
+  //                         "div",
+  //                         {
+  //                           class: "tr-body-item"
+  //                         },
+  //                         item.value
+  //                       );
+  //                     })
+  //                 ]
+  //               )
+  //             ]
+  //           );
+  //         })
+  //     ]
+  //   );
+  // }
 };
 </script>
 <style lang="less" scoped>

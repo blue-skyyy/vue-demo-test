@@ -11,7 +11,7 @@ export default {
 </script>
 
 <style>
-@import "./assets/styles/normalize.css";
+/* @import "./assets/styles/normalize.css"; */
 html,
 body {
   padding: 0;
@@ -23,6 +23,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  /* margin-top: 60px; */
 }
 </style>
