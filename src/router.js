@@ -14,6 +14,7 @@ const DRAG = () => import("./page/drag/index.vue");
 const EDIT = () => import("./page/editor/index.vue");
 const FROALA = () => import("./page/editor/froala.vue")
 const ICE = () => import("./page/ice/index.vue")
+const MICE = () => import("./page/ice/phoneIndex.vue")
 Vue.use(Router);
 
 const router = new Router({
@@ -58,6 +59,11 @@ const router = new Router({
       path: "/ice",
       name: "ice",
       component: ICE
+    },
+    {
+      path: "/mice",
+      name: "mobileIce",
+      component: MICE,
     }
   ]
 });
