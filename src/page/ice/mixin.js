@@ -1,6 +1,6 @@
 
 import config from "./config";
-const TYPE = "three";
+const TYPE = "five";
 export default {
 
   data () {
@@ -214,6 +214,20 @@ export default {
     }
   },
   computed: {
+    bindClass () {
+      return function (type) {
+        if (type === "square_empty") {
+          return {
+            "square_empty": true
+          }
+        }
+        if (type === "square_ice") {
+          return {
+            "square_ice": true
+          }
+        }
+      }
+    },
     // 计算方块位置
     setPos () {
       return function ({ x, y }) {

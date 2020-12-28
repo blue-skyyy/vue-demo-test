@@ -11,7 +11,8 @@
              v-for="(d, index) in Array(list.length)"
              :key="index">
           <div v-if="list[index].type === 'square_empty'"
-               :class="bindClass(list[index].type)">
+               :class="bindClass(list[index].type)"
+               >
             <!-- <div v-if="list[index].status === 'ice'">
               冰块状态
             </div> -->
@@ -53,109 +54,9 @@ export default {
   mixins: [mixin],
   data () {
     return {
-
-      startInfo: null,
-    }
-  },
-  computed: {
-    bindClass () {
-      return function (type) {
-        if (type === "square_empty") {
-          return {
-            "square_empty": true
-          }
-        }
-        if (type === "square_ice") {
-          return {
-            "square_ice": true
-          }
-        }
-
-
-      }
-    },
-    setPos () {
-      return function ({ x, y }) {
-        return {
-          left: `${(x - 1) * 50}px`,
-          top: `${y * 50}px`,
-        }
-      }
-    },
-    setGameBoxHeight () {
-      return function (w, h) {
-        return {
-          width: `${w * 50}px`,
-          height: `${h * 50}px`,
-        }
-      }
     }
   },
   methods: {
-    // 初始化list
-    initList () {
-      // this.list = this.list.map(d => {
-      //   if (d.type === "square_empty") {
-      //     return {
-      //       ...d,
-
-      //     }
-      //   }
-
-      // })
-    },
-    isMove (endInfo) {
-      const { position: { x, y } } = this.startInfo;
-      console.log(x, y, endInfo)
-      if (endInfo.position.x !== x && endInfo.position.y !== y) {
-        console.log("不能移动")
-        return;
-      }
-    },
-    choosesquare_ice (event, info) {
-      console.log("info", info);
-      console.log("startInfo", this.startInfo)
-      if (!this.startInfo) {
-        if (info.type === "square_empty") return
-        if (info.type === "square_ice") {
-          event.target.classList.add("square_iceActive");
-          this.startInfo = info;
-        }
-      }
-      // 保证必须是选选中冰块
-      if (this.startInfo) {
-        if (info.type === "reset") {
-          // 返回
-        }
-        if (info.type === "square_empty") {
-          console.log("dasda")
-          // 判断是否可以移动
-          event.target.classList.add("square_iceActive");
-          this.isMove(info)
-        }
-      }
-      // if (info.type === "square_empty" && !this.startInfo) return
-
-      // if (info.type === "square_ice") {
-      //   // event.target.classList.add("square_iceActive");
-      //   if (!this.startInfo) {
-
-      //   }
-      // }
-      // let currDOM =  event.
-      // console.log("event", event.target)
-      // console.log("this.startInfo ", this.startInfo)
-
-    },
-    dragstart (e) {
-      console.log("dragstart", e)
-    },
-    touchMove () {
-      //  console.log("touchMove", e)
-    },
-    touchEnd (e) {
-      console.log("touchEnd", e)
-    }
   },
 
 }

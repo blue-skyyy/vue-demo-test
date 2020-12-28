@@ -1,4 +1,5 @@
 import Vue from "vue";
+
 import Router from "vue-router";
 
 const Minx = () => import("./page/mixin/mixin.vue");

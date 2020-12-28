@@ -99,8 +99,8 @@ const config = {
       { type: "square_ice", position: { x: 1, y: 3 } },
       { type: "square_empty", position: { x: 2, y: 3 } },
       { type: "square_empty", position: { x: 3, y: 3 } },
-      { type: "square_empty", position: { x: 2, y: 4 } },
-      { type: "square_empty", position: { x: 3, y: 4 } },
+      { type: "square_ice", position: { x: 2, y: 4 } },
+      { type: "square_ice", position: { x: 3, y: 4 } },
 
     ],
     rowCol: {

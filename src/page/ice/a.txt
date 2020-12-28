@@ -24,9 +24,11 @@
                  class="reset">
               返回
             </div>
+            <!-- v-if="list[index].status === 'reset'" -->
+            <!-- @click="selectStartPoint(index, list[index].position, list[index].status)" -->
             <div 
-                @touchstart.prevent="iceTouchStart($event, index, list[index].position)"
-                @touchmove.prevent="iceTouchMove($event, index, list[index].position)"
+                @touchstart.prevent="iceTouchStart"
+                @touchend.prevent="iceTouchEnd"
                  class="ice"
                  :class="{'startPointActive': startPointActiveIndex === index}"
                  :ref="'ice_start_' + index">
