@@ -1,57 +1,77 @@
 <template>
   <div class="container">
+    <div @click="restartGame">重制游戏</div>
     <div class="game-container">
-      <div class="game-box"
-           :style="setGameBoxHeight(rowCol.col, rowCol.row)">
-        <div class="item"
-             :style="setPos(list[index].position)"
-             v-for="(d, index) in Array(list.length)"
-             :key="index">
-          <div v-if="list[index].type === 'square_empty'"
-               :class="bindClass(list[index].type)"
-               >
-            <div @click="selectEndPoint(index, list[index].position)"
-                 :class="{'endPointActive': endPointActiveIndex === index}"
-                 :ref="'ice_end_' + index">
-              空格子{{index}}
+      <div class="game-box" :style="setGameBoxHeight(rowCol.col, rowCol.row)">
+        <div
+          class="item"
+          :style="setPos(list[index].position)"
+          v-for="(d, index) in Array(list.length)"
+          :key="index"
+        >
+          <div
+            v-if="list[index].type === 'square_empty'"
+            :class="bindClass(list[index].type)"
+          >
+            <div
+              @click="selectEndPoint(index, list[index].position)"
+              :class="{ endPointActive: endPointActiveIndex === index }"
+              :ref="'ice_end_' + index"
+            >
+              空格子{{ index }}
             </div>
           </div>
 
-          <div v-if="list[index].type === 'square_ice'"
-               :class="bindClass(list[index].type)">
-            <div @click="backIceSquare(index)"
-                 :ref="'ice_back_' + index"
-                 class="reset">
+          <div
+            v-if="list[index].type === 'square_ice'"
+            :class="bindClass(list[index].type)"
+          >
+            <div
+              @click="backIceSquare(index)"
+              :ref="'ice_back_' + index"
+              class="reset"
+            >
               返回
             </div>
-            <div 
-                @touchstart.prevent="iceTouchStart($event, index, list[index].position)"
-                @touchmove.prevent="iceTouchMove($event, index, list[index].position)"
-                 class="ice"
-                 :class="{'startPointActive': startPointActiveIndex === index}"
-                 :ref="'ice_start_' + index">
-              冰块起点{{index}}
+            <div
+              @touchstart.prevent="
+                iceTouchStart(
+                  $event,
+                  index,
+                  list[index].position,
+                  list[index].status
+                )
+              "
+              @touchmove.prevent="
+                iceTouchMove(
+                  $event,
+                  index,
+                  list[index].position,
+                  list[index].status
+                )
+              "
+              class="ice"
+              :class="{ startPointActive: startPointActiveIndex === index }"
+              :ref="'ice_start_' + index"
+            >
+              冰块起点{{ index }}
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-
 </template>
 
 <script>
-import mmixin from "./mmixin"
+import mmixin from "./mmixin";
 export default {
   mixins: [mmixin],
-  data () {
-    return {
-    }
+  data() {
+    return {};
   },
-  methods: {
-  },
-
-}
+  methods: {}
+};
 </script>
 <style lang="less" scoped>
 p,

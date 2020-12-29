@@ -1,65 +1,72 @@
 <template>
   <div class="container">
-
-    <button @click="mylog">输出 </button>
+    <button @click="mylog">输出</button>
     <div class="game-container">
-
-      <div class="game-box"
-           :style="setGameBoxHeight(rowCol.col, rowCol.row)">
-        <div class="item"
-             :style="setPos(list[index].position)"
-             v-for="(d, index) in Array(list.length)"
-             :key="index">
-          <div v-if="list[index].type === 'square_empty'"
-               :class="bindClass(list[index].type)"
-               >
+      <div class="game-box" :style="setGameBoxHeight(rowCol.col, rowCol.row)">
+        <div
+          class="item"
+          :style="setPos(list[index].position)"
+          v-for="(d, index) in Array(list.length)"
+          :key="index"
+        >
+          <div
+            v-if="list[index].type === 'square_empty'"
+            :class="bindClass(list[index].type)"
+          >
             <!-- <div v-if="list[index].status === 'ice'">
               冰块状态
             </div> -->
-            <div @click="selectEndPoint(index, list[index].position)"
-                 :class="{'endPointActive': endPointActiveIndex === index}"
-                 :ref="'ice_end_' + index">
-              空格子{{index}}
+            <div
+              @click="selectEndPoint(index, list[index].position)"
+              :class="{ endPointActive: endPointActiveIndex === index }"
+              :ref="'ice_end_' + index"
+            >
+              空格子{{ index }}
             </div>
           </div>
 
-          <div v-if="list[index].type === 'square_ice'"
-               :class="bindClass(list[index].type)">
-            <div @click="backIceSquare(index)"
-                 :ref="'ice_back_' + index"
-                 class="reset">
+          <div
+            v-if="list[index].type === 'square_ice'"
+            :class="bindClass(list[index].type)"
+          >
+            <div
+              @click="backIceSquare(index)"
+              :ref="'ice_back_' + index"
+              class="reset"
+            >
               返回
             </div>
             <!-- v-if="list[index].status === 'reset'" -->
-            <div @click="selectStartPoint(index, list[index].position, list[index].status)"
-                 class="ice"
-                 :class="{'startPointActive': startPointActiveIndex === index}"
-                 :ref="'ice_start_' + index">
-              冰块起点{{index}}
+            <div
+              @click="
+                selectStartPoint(
+                  index,
+                  list[index].position,
+                  list[index].status
+                )
+              "
+              class="ice"
+              :class="{ startPointActive: startPointActiveIndex === index }"
+              :ref="'ice_start_' + index"
+            >
+              冰块起点{{ index }}
             </div>
           </div>
-
         </div>
       </div>
-
     </div>
   </div>
-
 </template>
 
-
 <script>
-import mixin from "./mixin"
+import mixin from "./mixin";
 export default {
   mixins: [mixin],
-  data () {
-    return {
-    }
+  data() {
+    return {};
   },
-  methods: {
-  },
-
-}
+  methods: {}
+};
 </script>
 
 <style lang="less">
