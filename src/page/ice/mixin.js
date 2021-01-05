@@ -1,5 +1,5 @@
 import config from "./config";
-const TYPE = "five";
+const TYPE = "six";
 export default {
   data() {
     return {
@@ -47,10 +47,10 @@ export default {
       let ref = `ice_start_${domIndex}`;
       let dom = this.$refs[ref][0];
       if (direction === "x") {
-        dom.style.left = "0px";
+        dom.style.left = "50%";
       }
       if (direction === "y") {
-        dom.style.top = "0px";
+        dom.style.top = "43%";
       }
       dom.style.zIndex = 100;
       // 冰块 moved状态取消
@@ -167,16 +167,35 @@ export default {
         }
       }
     },
+
+    getMoveDistance(direction) {
+      let gap = this.endPointInfo[direction] - this.startPointInfo[direction];
+      console.log("direction", direction, "gap", gap);
+      let dis = this.$refs[`ice_start_${this.startPointActiveIndex}`][0][
+        direction === "x" ? "offsetLeft" : "offsetTop"
+      ];
+      return 104 * gap + dis;
+    },
     // 移动冰块
     move(direction) {
       let gap, ref, dom;
-      gap = this.endPointInfo[direction] - this.startPointInfo[direction];
+      // gap = this.endPointInfo[direction] - this.startPointInfo[direction];
+      console.log(
+        "====start====",
+        gap,
+        this.$refs[`ice_start_${this.startPointActiveIndex}`][0].offsetLeft
+      );
+      console.log(
+        "====end====",
+        this.$refs[`ice_end_${this.endPointActiveIndex}`][0].offsetLeft
+      );
       ref = `ice_start_${this.startPointActiveIndex}`;
       dom = this.$refs[ref][0];
-      dom.style.zIndex = 3;
+      dom.style.zIndex = 66;
       dom.style[
         direction === "x" ? "left" : direction === "y" ? "top" : ""
-      ] = `${50 * gap}px`;
+      ] = `${this.getMoveDistance(direction)}px`;
+      //  `${104 * gap}px`;
       this.isMoving = true;
       // 改变LIST状态
       setTimeout(() => {
@@ -221,12 +240,12 @@ export default {
       return function(type) {
         if (type === "square_empty") {
           return {
-            square_empty: true
+            "square-empty-wrap": true
           };
         }
         if (type === "square_ice") {
           return {
-            square_ice: true
+            "square-ice-wrap": true
           };
         }
       };
@@ -235,8 +254,8 @@ export default {
     setPos() {
       return function({ x, y }) {
         return {
-          left: `${(x - 1) * 50}px`,
-          top: `${y * 50}px`
+          left: `${(x - 1) * 104}px`,
+          top: `${y * 104}px`
         };
       };
     },
@@ -244,8 +263,8 @@ export default {
     setGameBoxHeight() {
       return function(w, h) {
         return {
-          width: `${w * 50}px`,
-          height: `${h * 50}px`
+          width: `${w * 104}px`,
+          height: `${h * 104}px`
         };
       };
     }
