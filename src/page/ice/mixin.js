@@ -1,42 +1,77 @@
 import config from "./config";
+import { ICEHistory } from "./History";
+import { cloneDeep } from "../../utils/utils";
 const TYPE = "six";
 export default {
   data() {
     return {
-      historyList: [],
+      iceHistory: new ICEHistory(),
       startPointActiveIndex: null,
       endPointActiveIndex: null,
       startPointInfo: null,
       endPointInfo: null,
       isMoving: false, // 是否在移动
-      list: config[TYPE].list,
+      list: cloneDeep(config[TYPE].list),
       rowCol: config[TYPE].rowCol,
-      isBacking: false // 是否在回退
+      isBacking: false, // 是否在回退
+      hackReset: true,
+      timeCount: 0 // 计时器
     };
   },
-
+  mounted() {
+    this.interval = setInterval(() => {
+      this.timeCount += 1;
+    }, 1000);
+  },
   methods: {
+    // 设置list变化属性
+    setListStatus(index, status) {
+      this.$set(
+        this.list,
+        index,
+        Object.assign({}, this.list[index], {
+          status: status
+        })
+      );
+    },
+    // 重新开始游戏
+    reStartGame() {
+      this.hackReset = false; //销毁组件
+      this.$nextTick(() => {
+        this.clearSelectInfo();
+        this.list = cloneDeep(config[TYPE].list);
+        this.isMoving = false; // 是否在移动
+        this.isBacking = false; // 是否在回退
+        this.hackReset = true; //重建组件
+      });
+    },
     // 存储历史记录
     pushHistoryList(history) {
-      this.historyList.push(history);
+      if (this.iceHistory.getLength() > 0) {
+        const lastHistory = this.iceHistory.getLast();
+        this.setListStatus(lastHistory.startIndex, "moved");
+      }
+      this.iceHistory.push(history);
     },
     // 返回按钮将冰块重置
     backIceSquare(domIndex) {
-      if (!this.historyList.length) return;
+      if (!this.iceHistory.getLength()) return;
       if (this.isBacking || this.isMoving) return;
-      const lastHistory = this.historyList[this.historyList.length - 1];
+      let lastHistory = this.iceHistory.getLast();
       // 只能逐步返回
       if (lastHistory.startIndex !== domIndex) return;
       if (lastHistory.startIndex === domIndex) {
         this.isBacking = true;
-        // 把最后一条记录删掉
         this.backMove(domIndex, lastHistory);
-        this.historyList = this.historyList.slice(
-          0,
-          this.historyList.length - 1
-        );
+        // 把最后一条记录删掉
+        this.iceHistory.delLast();
         // DOM复位才能做其他事
         setTimeout(() => {
+          // 将最近一条记录返回按钮复位
+          if (this.iceHistory.getLength() > 0) {
+            lastHistory = this.iceHistory.getLast();
+            this.setListStatus(lastHistory.startIndex, "reset");
+          }
           this.isBacking = false;
         }, 1200);
       }
@@ -54,33 +89,16 @@ export default {
       }
       dom.style.zIndex = 100;
       // 冰块 moved状态取消
-      this.$set(
-        this.list,
-        startIndex,
-        Object.assign({}, { ...this.list[startIndex] }, { status: "" })
-      );
+      this.setListStatus(startIndex, "");
       // 空格格子状态恢复
-      this.$set(
-        this.list,
-        endIndex,
-        Object.assign({}, { ...this.list[endIndex] }, { status: "" })
-      );
-    },
-
-    mylog() {
-      console.log("this.historyList", this.historyList);
-      // console.log("this.startPointInfo", this.startPointInfo)
-      console.log("-----");
-      // console.log("this.endPointInfo", this.endPointInfo)
-      console.log("-----");
-      console.log("this.list", this.list);
+      this.setListStatus(endIndex, "");
     },
 
     // 选中起点
     selectStartPoint(index, info, status) {
       if (this.isBacking || this.isMoving) return;
       // 已移动不可以再选择
-      if (status === "moved") return;
+      if (status === "moved" || status === "reset") return;
       // 如果已有终点信息清除,保证当前所选起点信息是最新的
       if (this.endPointInfo) {
         this.clearSelectInfo();
@@ -110,7 +128,7 @@ export default {
       if (isWin) {
         alert("You Win");
       } else {
-        console.log("游戏没结束");
+        console.error("游戏没结束");
       }
     },
     // 判断冰块是否可以移动
@@ -163,14 +181,13 @@ export default {
         if (isCross) {
           this.move(direction);
         } else {
-          console.log("不能滑动");
+          console.error("不能滑动");
         }
       }
     },
 
     getMoveDistance(direction) {
       let gap = this.endPointInfo[direction] - this.startPointInfo[direction];
-      console.log("direction", direction, "gap", gap);
       let dis = this.$refs[`ice_start_${this.startPointActiveIndex}`][0][
         direction === "x" ? "offsetLeft" : "offsetTop"
       ];
@@ -178,43 +195,20 @@ export default {
     },
     // 移动冰块
     move(direction) {
-      let gap, ref, dom;
-      // gap = this.endPointInfo[direction] - this.startPointInfo[direction];
-      console.log(
-        "====start====",
-        gap,
-        this.$refs[`ice_start_${this.startPointActiveIndex}`][0].offsetLeft
-      );
-      console.log(
-        "====end====",
-        this.$refs[`ice_end_${this.endPointActiveIndex}`][0].offsetLeft
-      );
+      let ref, dom;
       ref = `ice_start_${this.startPointActiveIndex}`;
       dom = this.$refs[ref][0];
       dom.style.zIndex = 66;
       dom.style[
         direction === "x" ? "left" : direction === "y" ? "top" : ""
       ] = `${this.getMoveDistance(direction)}px`;
-      //  `${104 * gap}px`;
       this.isMoving = true;
       // 改变LIST状态
       setTimeout(() => {
-        // 冰块变为返回
-        this.$set(
-          this.list,
-          this.startPointActiveIndex,
-          Object.assign({}, this.list[this.startPointActiveIndex], {
-            status: "moved"
-          })
-        );
+        // 冰块起变为返回
+        this.setListStatus(this.startPointActiveIndex, "reset");
         // 空格子变为冰块
-        this.$set(
-          this.list,
-          this.endPointActiveIndex,
-          Object.assign({}, this.list[this.endPointActiveIndex], {
-            status: "ice"
-          })
-        );
+        this.setListStatus(this.endPointActiveIndex, "ice");
         // 历史记录里PUSH一条
         this.pushHistoryList({
           startIndex: this.startPointActiveIndex,
@@ -267,6 +261,15 @@ export default {
           height: `${h * 104}px`
         };
       };
+    }
+  },
+  filters: {
+    formatTime(timer) {
+      let m = parseInt(timer / 60);
+      let s = timer - m * 60;
+      m = m > 9 ? m : "0" + m;
+      s = s > 9 ? s : "0" + s;
+      return m + ":" + s;
     }
   }
 };

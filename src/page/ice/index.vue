@@ -1,10 +1,23 @@
 <template>
   <div class="container">
-    <button @click="mylog">输出</button>
-    <div class="game-container">
+    <div class="puzzle-game-container">
+      <!-- 头部区域 -->
+      <div class="puzzle-game-header">
+        <div class="puzzle-game-header-title">
+          滑冰块
+        </div>
+        <div class="puzzle-game-header-timer">
+          {{ timeCount | formatTime }}
+        </div>
+      </div>
+      <!-- 右侧两个div按钮 -->
+      <div class="puzzle-game-right">
+        <div class="puzzle-game-right-reset" @click.stop="reStartGame"></div>
+      </div>
       <div class="puzzle-game-box">
         <div
           class="puzzle-game-box-content"
+          v-if="hackReset"
           :style="setGameBoxHeight(rowCol.col, rowCol.row)"
         >
           <div
@@ -17,17 +30,12 @@
               v-if="list[index].type === 'square_empty'"
               :class="bindClass(list[index].type)"
             >
-              <!-- <div v-if="list[index].status === 'ice'">
-              冰块状态
-            </div> -->
               <div
                 class="square-empty-default"
                 @click.stop="selectEndPoint(index, list[index].position)"
                 :class="{ endPointActive: endPointActiveIndex === index }"
                 :ref="'ice_end_' + index"
-              >
-                空格子{{ index }}凹槽
-              </div>
+              ></div>
             </div>
 
             <div
@@ -37,7 +45,7 @@
               <div class="square-ice-wrap-default">
                 <div
                   class="square-ice-wrap-default-ice"
-                  @click="
+                  @click.stop="
                     selectStartPoint(
                       index,
                       list[index].position,
@@ -48,42 +56,20 @@
                   :ref="'ice_start_' + index"
                 ></div>
                 <div
-                  v-if="list[index].status === 'moved'"
                   class="square-ice-wrap-default-reset"
-                  @click="backIceSquare(index)"
                   :ref="'ice_back_' + index"
                 >
-                  <img
-                    src="http://chuantu.xyz/t6/741/1609843678x1700339730.png"
-                  />
+                  <div
+                    @click.stop="backIceSquare(index)"
+                    v-if="list[index].status === 'reset'"
+                  >
+                    <img
+                      src="http://chuantu.xyz/t6/741/1609843678x1700339730.png"
+                    />
+                  </div>
                 </div>
               </div>
-              <!-- <div class="square-ice-wrap">dsada</div> -->
-              <!-- <div
-                @click="backIceSquare(index)"
-                :ref="'ice_back_' + index"
-                class="reset"
-              >
-                返回
-              </div> -->
-              <!-- v-if="list[index].status === 'reset'" -->
-              <!-- <div
-                @click="
-                  selectStartPoint(
-                    index,
-                    list[index].position,
-                    list[index].status
-                  )
-                "
-                class="square-ice-default"
-                :class="{ startPointActive: startPointActiveIndex === index }"
-                :ref="'ice_start_' + index"
-              >
-                冰块起点{{ index }}
-              </div> -->
             </div>
-
-            <!-- 结束 -->
           </div>
         </div>
       </div>
@@ -111,14 +97,52 @@ span {
 .container {
   height: 750px;
   width: 1334px;
-  border: 1px solid red;
-  .game-container {
+  .puzzle-game-container {
     height: 100%;
+    background-repeat: no-repeat;
+    background-position: center center;
     width: 100%;
-    background: green;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    position: relative;
+    .puzzle-game-header {
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      text-align: center;
+      .puzzle-game-header-title,
+      .puzzle-game-header-timer {
+        box-sizing: border-box;
+        height: 68px;
+        border-radius: 0 0 44px 44px;
+        display: inline-block;
+        font-size: 36px;
+        color: #fff;
+        height: 68px;
+        background: #546be7;
+        border-radius: 0px 0px 44px 44px;
+        box-shadow: 0px -8px 0px 0px #354ed5 inset;
+      }
+      .puzzle-game-header-title {
+        width: 257px;
+      }
+      .puzzle-game-header-timer {
+        margin-left: 3px;
+        width: 157px;
+      }
+    }
+    .puzzle-game-right {
+      .puzzle-game-right-reset {
+        width: 72px;
+        height: 72px;
+        background-image: url("http://chuantu.xyz/t6/741/1609916231x1700340463.png");
+        background-repeat: no-repeat;
+        background-position: center center;
+        border-radius: 50%;
+        box-sizing: border-box;
+        position: absolute;
+        right: 18px;
+        top: 105px;
+      }
+    }
     .puzzle-game-box {
       width: 580px;
       height: 580px;
@@ -129,6 +153,8 @@ span {
       justify-content: center;
       border: 16px solid #fff;
       position: relative;
+      top: 25px;
+      left: 45%;
       &::after {
         content: "";
         width: 556px;
@@ -230,14 +256,14 @@ span {
           //   // background: pink;
           // }
         }
-        .startPointActive {
-          box-sizing: content-box;
-          border: 1px solid red;
-        }
-        .endPointActive {
-          box-sizing: content-box;
-          border: 1px solid green;
-        }
+        // .startPointActive {
+        //   box-sizing: content-box;
+        //   border: 1px solid red;
+        // }
+        // .endPointActive {
+        //   box-sizing: content-box;
+        //   border: 1px solid green;
+        // }
       }
     }
   }
